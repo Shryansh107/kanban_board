@@ -10,22 +10,28 @@ function App() {
   const [error, setError] = useState(null);
   const [draggingTaskId, setDraggingTaskId] = useState(null);
   const [draggedOverColumn, setDraggedOverColumn] = useState(null);
-  
-  // Theme state: defaults to light, saved to localStorage
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('color-mode') || 'dark';
-  });
-
-  // Apply theme on initialization and state change
-  useEffect(() => {
-    document.documentElement.setAttribute('data-color-mode', theme);
-    localStorage.setItem('color-mode', theme);
-  }, [theme]);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState(null);
 
   // Fetch tasks on mount
   useEffect(() => {
     fetchTasks();
   }, []);
+
+  // Handle escape key to close modal
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        closeDeleteModal();
+      }
+    };
+    if (isDeleteModalOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isDeleteModalOpen]);
 
   const fetchTasks = async () => {
     setIsLoading(true);
@@ -43,10 +49,6 @@ function App() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const toggleTheme = () => {
-    setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
   };
 
   const handleCreateTask = async (e) => {
@@ -79,9 +81,9 @@ function App() {
 
   const handleToggleTaskStatus = async (id, currentStatus) => {
     const nextStatus = currentStatus === 'todo' ? 'done' : 'todo';
-    
+
     // Optimistic UI update
-    setTasks(prev => 
+    setTasks(prev =>
       prev.map(t => t.id === id ? { ...t, status: nextStatus } : t)
     );
     setError(null);
@@ -99,22 +101,35 @@ function App() {
         const errData = await response.json();
         throw new Error(errData.error || `Failed to update task (HTTP ${response.status})`);
       }
-      
+
       const updatedTask = await response.json();
       // Sync state with official response
       setTasks(prev => prev.map(t => t.id === id ? updatedTask : t));
     } catch (err) {
       setError(err.message || 'Failed to update task status.');
       // Revert optimistic update
-      setTasks(prev => 
+      setTasks(prev =>
         prev.map(t => t.id === id ? { ...t, status: currentStatus } : t)
       );
     }
   };
 
-  const handleDeleteTask = async (id) => {
-    const taskToDelete = tasks.find(t => t.id === id);
+  const openDeleteConfirmation = (task) => {
+    setTaskToDelete(task);
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setTaskToDelete(null);
+    setIsDeleteModalOpen(false);
+  };
+
+  const handleDeleteTask = async () => {
     if (!taskToDelete) return;
+    const id = taskToDelete.id;
+    const taskObj = taskToDelete;
+
+    closeDeleteModal();
 
     // Optimistic UI update
     setTasks(prev => prev.filter(t => t.id !== id));
@@ -132,7 +147,10 @@ function App() {
     } catch (err) {
       setError(err.message || 'Failed to delete task.');
       // Revert optimistic update
-      setTasks(prev => [...prev, taskToDelete]);
+      setTasks(prev => {
+        if (prev.some(t => t.id === id)) return prev;
+        return [...prev, taskObj];
+      });
     }
   };
 
@@ -168,7 +186,7 @@ function App() {
     setDraggingTaskId(null);
     const taskIdStr = e.dataTransfer.getData('text/plain');
     if (!taskIdStr) return;
-    
+
     const taskId = parseInt(taskIdStr, 10);
     const task = tasks.find(t => t.id === taskId);
     if (task && task.status !== targetStatus) {
@@ -243,6 +261,17 @@ function App() {
       <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
         <path d="M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z" />
       </svg>
+    ),
+    ArrowLeft: () => (
+      <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true">
+        <path d="M7.78 12.53a.75.75 0 0 1-1.06 0L2.47 8.28a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 1.06L4.06 7.5h10.75a.75.75 0 0 1 0 1.5H4.06l3.72 3.72a.75.75 0 0 1 0 1.06Z" />
+      </svg>
+    ),
+    ArrowRight: () => (
+      <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true">
+        <path d="M8.22 2.97a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 8 8.22 4.28a.75.75 0 0 1 0-1.06Z" />
+        <path d="M12.5 8H1.75a.75.75 0 0 1 0-1.5h10.75a.75.75 0 0 1 0 1.5Z" />
+      </svg>
     )
   };
 
@@ -252,18 +281,7 @@ function App() {
       <header className="header" id="app-header">
         <div className="header-brand">
           <Octicons.Logo />
-          <span>Mini Kanban Task Manager</span>
-        </div>
-        <div className="header-actions">
-          <button 
-            className="btn" 
-            onClick={toggleTheme} 
-            title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-            id="theme-toggle-btn"
-          >
-            {theme === 'light' ? <Octicons.Moon /> : <Octicons.Sun />}
-            <span>Appearance: {theme === 'light' ? 'Dark' : 'Light'}</span>
-          </button>
+          <span>Kanban Board</span>
         </div>
       </header>
 
@@ -276,9 +294,9 @@ function App() {
           <div className="flash flash-danger" id="global-error-banner" role="alert">
             <Octicons.ErrorIcon />
             <div style={{ flex: 1 }}>{error}</div>
-            <button 
-              className="btn-icon-delete" 
-              onClick={() => setError(null)} 
+            <button
+              className="btn-icon-delete"
+              onClick={() => setError(null)}
               title="Dismiss error"
               style={{ color: 'inherit' }}
             >
@@ -299,8 +317,8 @@ function App() {
             id="new-task-input"
             aria-label="New task title"
           />
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="btn btn-primary"
             disabled={!newTaskTitle.trim() || (isLoading && tasks.length === 0)}
             id="new-task-submit-btn"
@@ -312,8 +330,8 @@ function App() {
         {/* Kanban Board columns side-by-side */}
         <div className="kanban-board" id="kanban-board">
           {/* TO DO COLUMN */}
-          <div 
-            className={`column-box ${draggedOverColumn === 'todo' ? 'column-drag-over' : ''}`} 
+          <div
+            className={`column-box ${draggedOverColumn === 'todo' ? 'column-drag-over' : ''}`}
             id="todo-column"
             onDragOver={handleDragOver}
             onDragEnter={(e) => handleDragEnter(e, 'todo')}
@@ -354,16 +372,16 @@ function App() {
               ) : (
                 // Tasks List
                 todoTasks.map(task => (
-                  <div 
-                    className={`task-item ${draggingTaskId === task.id ? 'task-dragging' : ''}`} 
-                    key={task.id} 
+                  <div
+                    className={`task-item ${draggingTaskId === task.id ? 'task-dragging' : ''}`}
+                    key={task.id}
                     id={`task-${task.id}`}
                     draggable={true}
                     onDragStart={(e) => handleDragStart(e, task)}
                     onDragEnd={handleDragEnd}
                   >
                     <div className="task-header-row">
-                      <button 
+                      <button
                         type="button"
                         className="task-status-btn"
                         onClick={() => handleToggleTaskStatus(task.id, task.status)}
@@ -374,16 +392,27 @@ function App() {
                       <span className="task-meta-id">kanban_board #{task.id}</span>
                     </div>
                     <div className="task-title">{task.title}</div>
-                    
-                    <button
-                      type="button"
-                      className="btn-icon-delete"
-                      onClick={() => handleDeleteTask(task.id)}
-                      title="Delete task"
-                      aria-label={`Delete task "${task.title}"`}
-                    >
-                      <Octicons.Trash />
-                    </button>
+
+                    <div className="task-actions">
+                      <button
+                        type="button"
+                        className="btn-icon-action"
+                        onClick={() => handleToggleTaskStatus(task.id, task.status)}
+                        title="Move to Done"
+                        aria-label="Move task to Done"
+                      >
+                        <Octicons.ArrowRight />
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-icon-action btn-icon-delete"
+                        onClick={() => openDeleteConfirmation(task)}
+                        title="Delete task"
+                        aria-label={`Delete task "${task.title}"`}
+                      >
+                        <Octicons.Trash />
+                      </button>
+                    </div>
                   </div>
                 ))
               )}
@@ -391,8 +420,8 @@ function App() {
           </div>
 
           {/* DONE COLUMN */}
-          <div 
-            className={`column-box ${draggedOverColumn === 'done' ? 'column-drag-over' : ''}`} 
+          <div
+            className={`column-box ${draggedOverColumn === 'done' ? 'column-drag-over' : ''}`}
             id="done-column"
             onDragOver={handleDragOver}
             onDragEnter={(e) => handleDragEnter(e, 'done')}
@@ -433,16 +462,16 @@ function App() {
               ) : (
                 // Tasks List
                 doneTasks.map(task => (
-                  <div 
-                    className={`task-item task-done ${draggingTaskId === task.id ? 'task-dragging' : ''}`} 
-                    key={task.id} 
+                  <div
+                    className={`task-item task-done ${draggingTaskId === task.id ? 'task-dragging' : ''}`}
+                    key={task.id}
                     id={`task-${task.id}`}
                     draggable={true}
                     onDragStart={(e) => handleDragStart(e, task)}
                     onDragEnd={handleDragEnd}
                   >
                     <div className="task-header-row">
-                      <button 
+                      <button
                         type="button"
                         className="task-status-btn"
                         onClick={() => handleToggleTaskStatus(task.id, task.status)}
@@ -453,16 +482,27 @@ function App() {
                       <span className="task-meta-id">kanban_board #{task.id}</span>
                     </div>
                     <div className="task-title">{task.title}</div>
-                    
-                    <button
-                      type="button"
-                      className="btn-icon-delete"
-                      onClick={() => handleDeleteTask(task.id)}
-                      title="Delete task"
-                      aria-label={`Delete task "${task.title}"`}
-                    >
-                      <Octicons.Trash />
-                    </button>
+
+                    <div className="task-actions">
+                      <button
+                        type="button"
+                        className="btn-icon-action"
+                        onClick={() => handleToggleTaskStatus(task.id, task.status)}
+                        title="Move back to To Do"
+                        aria-label="Move task back to To Do"
+                      >
+                        <Octicons.ArrowLeft />
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-icon-action btn-icon-delete"
+                        onClick={() => openDeleteConfirmation(task)}
+                        title="Delete task"
+                        aria-label={`Delete task "${task.title}"`}
+                      >
+                        <Octicons.Trash />
+                      </button>
+                    </div>
                   </div>
                 ))
               )}
@@ -481,6 +521,35 @@ function App() {
           About
         </a>
       </footer>
+
+      {/* Delete Confirmation Modal Overlay */}
+      {isDeleteModalOpen && taskToDelete && (
+        <div className="modal-overlay" onClick={closeDeleteModal} id="delete-modal-overlay">
+          <div className="modal-container" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="modal-title">
+            <div className="modal-header">
+              <h3 className="modal-title" id="modal-title">Delete task?</h3>
+              <button className="btn-icon-action" onClick={closeDeleteModal} aria-label="Close dialog" title="Close dialog">
+                &times;
+              </button>
+            </div>
+            <div className="modal-body">
+              <p>Are you sure you want to delete this task? This action cannot be undone.</p>
+              <div className="modal-task-preview">
+                <span className="task-meta-id">kanban_board #{taskToDelete.id}</span>
+                <div className="task-title-preview">{taskToDelete.title}</div>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn" onClick={closeDeleteModal}>
+                Cancel
+              </button>
+              <button className="btn btn-danger" onClick={handleDeleteTask} id="confirm-delete-btn">
+                Delete task
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
