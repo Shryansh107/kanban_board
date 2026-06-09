@@ -559,6 +559,17 @@ body {
   pointer-events: auto;
 }
 
+@media (max-width: 1024px) {
+  .task-actions {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .task-content {
+    padding-right: 56px;
+  }
+}
+
+
 .btn-icon-action {
   background: transparent;
   border: none;
