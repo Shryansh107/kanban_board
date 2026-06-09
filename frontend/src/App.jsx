@@ -3,6 +3,17 @@ import './App.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
+const LOADING_MESSAGES = [
+  "CONNECTING TO REMOTE CLOUD DATABASE...",
+  "STATUS: SPINNING UP STORAGE DISKS...",
+  "DATALINK: WAKING UP DORMANT COMPUTE HANDLERS...",
+  "AUTHENTICATING SYSTEM CREDENTIALS...",
+  "RESOLVING ENVIRONMENT CONFIG...",
+  "FETCHING INTEGRITY SCHEMAS...",
+  "RETRIEVING KANBAN TASK BACKLOG LEDGER...",
+  "INITIAL HANDSHAKE READY — DEPLOYING BOARD VIEW..."
+];
+
 function App() {
   const [tasks, setTasks] = useState([]);
   const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -13,6 +24,12 @@ function App() {
   const [dragEnabledTaskId, setDragEnabledTaskId] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState(null);
+  
+  // Typewriter Fullscreen Loader States
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [visibleLines, setVisibleLines] = useState([]);
+  const [currentLineIdx, setCurrentLineIdx] = useState(0);
+  const [typedText, setTypedText] = useState("");
 
   // Fetch tasks on mount
   useEffect(() => {
@@ -33,6 +50,43 @@ function App() {
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isDeleteModalOpen]);
+
+  // Typewriter effect timer logic
+  useEffect(() => {
+    if (!isInitialLoad || !isLoading) return;
+
+    if (currentLineIdx < LOADING_MESSAGES.length) {
+      const fullText = LOADING_MESSAGES[currentLineIdx];
+      let charIdx = 0;
+      setTypedText("");
+
+      const timer = setInterval(() => {
+        setTypedText((prev) => prev + fullText.charAt(charIdx));
+        charIdx++;
+        if (charIdx >= fullText.length) {
+          clearInterval(timer);
+          setTimeout(() => {
+            setVisibleLines((prev) => [...prev, fullText]);
+            setCurrentLineIdx((prev) => prev + 1);
+          }, 400);
+        }
+      }, 15);
+
+      return () => clearInterval(timer);
+    } else {
+      const timer = setInterval(() => {
+        setVisibleLines((prev) => [...prev, "CLOUD GATEWAY DELAYED... RETRYING DATA FEED PINGS... (SERVER STILL WAKING UP)"]);
+      }, 5000);
+      return () => clearInterval(timer);
+    }
+  }, [currentLineIdx, isInitialLoad, isLoading]);
+
+  // Track initial load completion (dismisses immediately once tasks load or error occurs)
+  useEffect(() => {
+    if (isInitialLoad && !isLoading) {
+      setIsInitialLoad(false);
+    }
+  }, [isLoading, isInitialLoad]);
 
   const fetchTasks = async () => {
     setIsLoading(true);
@@ -582,6 +636,27 @@ function App() {
                 Delete task
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Fullscreen Typewriter Loader Overlay */}
+      {isInitialLoad && (
+        <div className="fullscreen-loader-overlay select-none" id="fullscreen-loader">
+          <div className="loader"></div>
+          <div className="loader-messages-container">
+            <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', color: 'var(--fg-default)', fontSize: '11px', letterSpacing: '0.05em', marginBottom: '16px' }}>
+              SYSTEM INITIALIZATION — Because Render is slow
+            </div>
+            {visibleLines.map((line, idx) => (
+              <div key={idx} className="mono" style={{ color: 'var(--fg-muted)', marginBottom: '4px', textTransform: 'uppercase' }}>// {line}</div>
+            ))}
+            {currentLineIdx < LOADING_MESSAGES.length && (
+              <div className="mono" style={{ color: 'var(--fg-default)', fontWeight: 'var(--weight-semibold)' }}>
+                &gt; {typedText}
+                <span className="loader-cursor"></span>
+              </div>
+            )}
           </div>
         </div>
       )}
