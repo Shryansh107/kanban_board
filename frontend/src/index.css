@@ -1,0 +1,675 @@
+/* GitHub Theme Match Design System */
+
+:root,
+[data-color-mode="light"] {
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-mono: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, "Liberation Mono", monospace;
+
+  --text-00: 12px;
+  --text-0: 14px;
+  --text-1: 16px;
+  --text-2: 20px;
+  --text-3: 24px;
+  --text-code: 12px;
+
+  --lh-tight: 1.25;
+  --lh-default: 1.5;
+  --lh-loose: 1.75;
+
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-pill: 999px;
+
+  --bg-default: #ffffff;
+  --bg-subtle: #f6f8fa;
+  --bg-muted: #f6f8fa;
+  --bg-inset: #f6f8fa;
+  --bg-overlay: #ffffff;
+
+  --fg-default: #1f2328;
+  --fg-muted: #656d76;
+  --fg-subtle: #6e7781;
+  --fg-on-emphasis: #ffffff;
+
+  --border-default: #d0d7de;
+  --border-muted: #d8dee4;
+  --border-subtle: rgba(27, 31, 36, 0.15);
+
+  --accent-emphasis: #0969da;
+  --accent-fg: #0969da;
+  --accent-muted: rgba(84, 174, 255, 0.4);
+  --accent-subtle: #ddf4ff;
+
+  --success-emphasis: #2da44e;
+  --success-fg: #1a7f37;
+  --success-subtle: #dafbe1;
+
+  --danger-emphasis: #cf222e;
+  --danger-fg: #cf222e;
+  --danger-subtle: #ffebe9;
+
+  --attention-emphasis: #9a6700;
+  --attention-fg: #9a6700;
+  --attention-subtle: #fff8c5;
+
+  --neutral-muted: rgba(175, 184, 193, 0.2);
+  --neutral-subtle: rgba(234, 238, 242, 0.5);
+
+  --canvas-default: var(--bg-default);
+  --canvas-subtle: var(--bg-subtle);
+  --canvas-inset: #f6f8fa;
+  --canvas-overlay: var(--bg-overlay);
+
+  --shadow-resting: 0 1px 0 rgba(27, 31, 36, 0.04);
+  --shadow-overlay: 0 8px 24px rgba(140, 149, 159, 0.2);
+
+  --ease-default: cubic-bezier(0.2, 0, 0, 1);
+  --duration-fast: 120ms;
+  --duration-normal: 180ms;
+}
+
+[data-color-mode="dark"] {
+  --bg-default: #0d1117;
+  --bg-subtle: #161b22;
+  --bg-muted: #161b22;
+  --bg-inset: #010409;
+  --bg-overlay: #161b22;
+
+  --fg-default: #e6edf3;
+  --fg-muted: #7d8590;
+  --fg-subtle: #7d8590;
+  --fg-on-emphasis: #ffffff;
+
+  --border-default: #30363d;
+  --border-muted: #21262d;
+  --border-subtle: rgba(240, 246, 252, 0.1);
+
+  --accent-emphasis: #2f81f7;
+  --accent-fg: #2f81f7;
+  --accent-muted: rgba(56, 139, 253, 0.4);
+  --accent-subtle: rgba(56, 139, 253, 0.15);
+
+  --success-emphasis: #238636;
+  --success-fg: #3fb950;
+  --success-subtle: rgba(46, 160, 67, 0.15);
+
+  --danger-emphasis: #da3633;
+  --danger-fg: #f85149;
+  --danger-subtle: rgba(248, 81, 73, 0.15);
+
+  --attention-emphasis: #9e6a03;
+  --attention-fg: #d29922;
+  --attention-subtle: rgba(187, 128, 9, 0.15);
+
+  --neutral-muted: rgba(110, 118, 129, 0.4);
+  --neutral-subtle: rgba(110, 118, 129, 0.1);
+
+  --canvas-default: var(--bg-default);
+  --canvas-subtle: var(--bg-subtle);
+  --canvas-inset: var(--bg-inset);
+  --canvas-overlay: var(--bg-overlay);
+
+  --shadow-resting: 0 1px 0 rgba(0, 0, 0, 0.04);
+  --shadow-overlay: 0 8px 24px rgba(1, 4, 9, 0.85);
+}
+
+/* Global Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-0);
+  line-height: var(--lh-default);
+  color: var(--fg-default);
+  background: var(--bg-default);
+  min-height: 100vh;
+  transition: background-color var(--duration-normal) var(--ease-default),
+              color var(--duration-normal) var(--ease-default);
+}
+
+/* Utilities */
+.muted {
+  color: var(--fg-muted);
+}
+
+.subtle {
+  color: var(--fg-subtle);
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-code);
+}
+
+.link {
+  color: var(--accent-fg);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 32px;
+  padding: 5px 12px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-subtle);
+  color: var(--fg-default);
+  font-family: var(--font-sans);
+  font-size: var(--text-0);
+  font-weight: var(--weight-medium);
+  line-height: 20px;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color var(--duration-fast) var(--ease-default),
+              border-color var(--duration-fast) var(--ease-default),
+              color var(--duration-fast) var(--ease-default);
+}
+
+.btn:hover {
+  background: var(--neutral-subtle);
+  border-color: var(--border-default);
+}
+
+.btn:active {
+  background: var(--neutral-muted);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--accent-emphasis);
+  outline-offset: -2px;
+}
+
+.btn:disabled {
+  color: var(--fg-subtle);
+  background: var(--bg-subtle);
+  border-color: var(--border-default);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Primary Button (GitHub Green) */
+.btn-primary {
+  background: var(--success-emphasis);
+  border-color: var(--border-subtle);
+  color: var(--fg-on-emphasis);
+}
+
+.btn-primary:hover {
+  background: #2c974b; /* Subtle hover color */
+  border-color: var(--border-subtle);
+  color: var(--fg-on-emphasis);
+}
+
+.btn-primary:active {
+  background: #298e46;
+}
+
+/* Danger Button (Red Text/Outline) */
+.btn-danger {
+  color: var(--danger-fg);
+  background: var(--bg-default);
+  border-color: var(--border-default);
+}
+
+.btn-danger:hover {
+  color: var(--fg-on-emphasis);
+  background: var(--danger-emphasis);
+  border-color: var(--border-subtle);
+}
+
+.btn-danger:active {
+  background: #be1c28;
+}
+
+/* Inputs */
+.input {
+  min-height: 32px;
+  padding: 5px 12px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-default);
+  color: var(--fg-default);
+  font-family: var(--font-sans);
+  font-size: var(--text-0);
+  line-height: 20px;
+  outline: none;
+  transition: border-color var(--duration-fast) var(--ease-default),
+              box-shadow var(--duration-fast) var(--ease-default);
+}
+
+.input::placeholder {
+  color: var(--fg-subtle);
+}
+
+.input:focus {
+  border-color: var(--accent-emphasis);
+  box-shadow: 0 0 0 3px var(--accent-muted);
+}
+
+/* Panels & Containers */
+.box {
+  background: var(--canvas-default);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.box-header {
+  padding: var(--space-4);
+  background: var(--bg-subtle);
+  border-bottom: 1px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Flash Messages / Alerts */
+.flash {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  font-size: var(--text-0);
+  margin-bottom: var(--space-4);
+}
+
+.flash-danger {
+  background: var(--danger-subtle);
+  border-color: rgba(207, 34, 46, 0.4);
+  color: var(--danger-fg);
+}
+
+.flash-danger svg {
+  fill: var(--danger-fg);
+}
+
+/* Layout Details */
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Header style */
+.header {
+  height: 64px;
+  background: var(--bg-subtle);
+  border-bottom: 1px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-6);
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-1);
+  font-weight: var(--weight-semibold);
+  color: var(--fg-default);
+}
+
+.header-brand svg {
+  fill: var(--fg-default);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* Main Container */
+.main-content {
+  flex: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-6) var(--space-10) var(--space-6);
+}
+
+/* Page Header & Repository Details metadata */
+.repo-header {
+  margin-bottom: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.repo-title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.repo-name {
+  font-size: var(--text-2);
+  font-weight: var(--weight-semibold);
+}
+
+.repo-badge {
+  font-size: var(--text-00);
+  font-weight: var(--weight-medium);
+  padding: 2px var(--space-2);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill);
+  color: var(--fg-muted);
+}
+
+.repo-meta {
+  font-size: var(--text-00);
+  color: var(--fg-muted);
+}
+
+/* Toolbar for creating tasks */
+.toolbar {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+  max-width: 600px;
+}
+
+.toolbar .input {
+  flex: 1;
+}
+
+/* Kanban Board columns */
+.kanban-board {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+}
+
+@media (max-width: 768px) {
+  .kanban-board {
+    grid-template-columns: 1fr;
+  }
+}
+
+.column-box {
+  background: var(--canvas-default);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.column-header {
+  background: var(--bg-subtle);
+  border-bottom: 1px solid var(--border-default);
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.column-title-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.column-title {
+  font-size: var(--text-0);
+  font-weight: var(--weight-semibold);
+  color: var(--fg-default);
+}
+
+.column-icon-todo {
+  fill: var(--fg-muted);
+}
+
+.column-icon-done {
+  fill: var(--success-fg);
+}
+
+.counter-badge {
+  font-size: var(--text-00);
+  font-weight: var(--weight-semibold);
+  background: var(--neutral-muted);
+  color: var(--fg-muted);
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+}
+
+.column-body {
+  padding: 0;
+  min-height: 250px;
+  background: var(--bg-default);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Task Item Row */
+.task-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border-muted);
+  background: var(--bg-default);
+  transition: background-color var(--duration-fast) var(--ease-default);
+}
+
+.task-item:last-child {
+  border-bottom: none;
+}
+
+.task-item:hover {
+  background: var(--bg-subtle);
+}
+
+.task-left {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  flex: 1;
+  padding-right: var(--space-3);
+}
+
+.task-checkbox-wrapper {
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Styled checkbox to fit the developer/GitHub aesthetic */
+.task-checkbox {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-default);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.task-checkbox:checked {
+  background-color: var(--accent-emphasis);
+  border-color: var(--accent-emphasis);
+}
+
+.task-checkbox:checked::after {
+  content: "";
+  display: block;
+  width: 4px;
+  height: 8px;
+  border: solid var(--fg-on-emphasis);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  position: absolute;
+  top: 1px;
+}
+
+.task-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.task-title {
+  font-size: var(--text-0);
+  font-weight: var(--weight-medium);
+  color: var(--fg-default);
+  word-break: break-word;
+}
+
+.task-item.task-done .task-title {
+  text-decoration: line-through;
+  color: var(--fg-muted);
+}
+
+.task-meta {
+  font-size: var(--text-00);
+  color: var(--fg-subtle);
+}
+
+.task-actions {
+  display: flex;
+  align-items: center;
+}
+
+.btn-icon-delete {
+  background: transparent;
+  border: none;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  color: var(--fg-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--duration-fast) var(--ease-default),
+              background-color var(--duration-fast) var(--ease-default);
+}
+
+.btn-icon-delete:hover {
+  color: var(--danger-fg);
+  background: var(--danger-subtle);
+}
+
+/* Blank Slate (No tasks display) */
+.blankslate {
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  color: var(--fg-muted);
+}
+
+.blankslate-icon {
+  margin-bottom: var(--space-3);
+  fill: var(--fg-subtle);
+}
+
+.blankslate-heading {
+  font-size: var(--text-1);
+  font-weight: var(--weight-semibold);
+  margin-bottom: var(--space-1);
+  color: var(--fg-default);
+}
+
+.blankslate-text {
+  font-size: var(--text-0);
+  max-width: 320px;
+}
+
+/* Skeleton Loading State */
+.skeleton-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border-muted);
+}
+
+.skeleton-text {
+  height: 14px;
+  background: var(--neutral-muted);
+  border-radius: var(--radius-sm);
+  animation: pulse 1.2s infinite ease-in-out;
+}
+
+.skeleton-text-main {
+  width: 150px;
+}
+
+.skeleton-text-sub {
+  width: 80px;
+  height: 10px;
+  margin-top: 4px;
+}
+
+.skeleton-btn {
+  width: 24px;
+  height: 24px;
+  background: var(--neutral-muted);
+  border-radius: var(--radius-sm);
+  animation: pulse 1.2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+/* Footer rules */
+.footer {
+  margin-top: var(--space-12);
+  padding: var(--space-6) 0;
+  border-top: 1px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-00);
+  color: var(--fg-muted);
+  gap: var(--space-4);
+}
