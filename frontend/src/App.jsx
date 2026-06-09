@@ -430,7 +430,6 @@ function App() {
                 <div className="blankslate">
                   <Octicons.EmptyStateIcon />
                   <h3 className="blankslate-heading">No tasks to do</h3>
-                  <p className="blankslate-text">Create a task using the input box above to get started.</p>
                 </div>
               ) : (
                 // Tasks List
@@ -534,7 +533,6 @@ function App() {
                 <div className="blankslate">
                   <Octicons.EmptyStateIcon />
                   <h3 className="blankslate-heading">No completed tasks</h3>
-                  <p className="blankslate-text">Check a task in the "To Do" column to mark it as completed.</p>
                 </div>
               ) : (
                 // Tasks List
@@ -600,16 +598,7 @@ function App() {
         </div>
       </main>
 
-      {/* GitHub-like Page Footer */}
-      <footer className="footer" id="app-footer">
-        <span>&copy; 2026 kanban-task-manager</span>
-        <a href="#github-spec" className="link" onClick={(e) => { e.preventDefault(); alert("GitHub Theme Match design spec version 1.0.0 is applied."); }}>
-          Design Spec
-        </a>
-        <a href="#about" className="link" onClick={(e) => { e.preventDefault(); alert("Mini Kanban Board homework assignment built with Node + Express & React."); }}>
-          About
-        </a>
-      </footer>
+
 
       {/* Delete Confirmation Modal Overlay */}
       {isDeleteModalOpen && taskToDelete && (
