@@ -351,15 +351,12 @@ function App() {
               {isLoading && tasks.length === 0 ? (
                 // Skeleton Loader
                 Array.from({ length: 3 }).map((_, i) => (
-                  <div className="skeleton-row" key={`todo-skeleton-${i}`}>
-                    <div className="task-left">
-                      <div className="skeleton-btn" />
-                      <div>
-                        <div className="skeleton-text skeleton-text-main" />
-                        <div className="skeleton-text skeleton-text-sub" />
-                      </div>
+                  <div className="task-item skeleton-card" key={`todo-skeleton-${i}`}>
+                    <div className="task-header-row">
+                      <div className="skeleton-circle" />
+                      <div className="skeleton-text skeleton-meta" />
                     </div>
-                    <div className="skeleton-btn" />
+                    <div className="skeleton-text skeleton-title" />
                   </div>
                 ))
               ) : todoTasks.length === 0 ? (
@@ -441,15 +438,12 @@ function App() {
               {isLoading && tasks.length === 0 ? (
                 // Skeleton Loader
                 Array.from({ length: 2 }).map((_, i) => (
-                  <div className="skeleton-row" key={`done-skeleton-${i}`}>
-                    <div className="task-left">
-                      <div className="skeleton-btn" />
-                      <div>
-                        <div className="skeleton-text skeleton-text-main" />
-                        <div className="skeleton-text skeleton-text-sub" />
-                      </div>
+                  <div className="task-item skeleton-card" key={`done-skeleton-${i}`}>
+                    <div className="task-header-row">
+                      <div className="skeleton-circle" />
+                      <div className="skeleton-text skeleton-meta" />
                     </div>
-                    <div className="skeleton-btn" />
+                    <div className="skeleton-text skeleton-title" />
                   </div>
                 ))
               ) : doneTasks.length === 0 ? (

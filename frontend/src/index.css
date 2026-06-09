@@ -587,37 +587,38 @@ body {
 }
 
 /* Skeleton Loading State */
-.skeleton-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--border-muted);
+/* Skeleton Loading State */
+.skeleton-card {
+  border: 1px solid var(--border-default);
+  background: var(--canvas-default);
+  margin-bottom: var(--space-3);
+  pointer-events: none;
+  width: 100%;
+}
+
+.skeleton-circle {
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-pill);
+  background: var(--neutral-muted);
+  animation: pulse 1.2s infinite ease-in-out;
 }
 
 .skeleton-text {
+  background: var(--neutral-muted);
+  border-radius: var(--radius-sm);
+  animation: pulse 1.2s infinite ease-in-out;
+}
+
+.skeleton-meta {
+  width: 100px;
+  height: 12px;
+}
+
+.skeleton-title {
+  width: 80%;
   height: 14px;
-  background: var(--neutral-muted);
-  border-radius: var(--radius-sm);
-  animation: pulse 1.2s infinite ease-in-out;
-}
-
-.skeleton-text-main {
-  width: 150px;
-}
-
-.skeleton-text-sub {
-  width: 80px;
-  height: 10px;
-  margin-top: 4px;
-}
-
-.skeleton-btn {
-  width: 24px;
-  height: 24px;
-  background: var(--neutral-muted);
-  border-radius: var(--radius-sm);
-  animation: pulse 1.2s infinite ease-in-out;
+  margin-top: var(--space-2);
 }
 
 @keyframes pulse {
