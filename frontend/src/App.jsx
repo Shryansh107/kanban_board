@@ -42,7 +42,7 @@ function App() {
         throw new Error(`Failed to load tasks (HTTP ${response.status})`);
       }
       const data = await response.json();
-      setTasks(data);
+      setTasks(data.sort((a, b) => b.id - a.id));
     } catch (err) {
       console.error(err);
       setError(err.message || 'Could not connect to the backend server. Verify the server is running.');
@@ -72,7 +72,7 @@ function App() {
         throw new Error(errData.error || `Failed to create task (HTTP ${response.status})`);
       }
       const createdTask = await response.json();
-      setTasks(prev => [...prev, createdTask]);
+      setTasks(prev => [createdTask, ...prev]);
       setNewTaskTitle('');
     } catch (err) {
       setError(err.message || 'Failed to create task.');
