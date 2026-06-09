@@ -10,6 +10,7 @@ function App() {
   const [error, setError] = useState(null);
   const [draggingTaskId, setDraggingTaskId] = useState(null);
   const [draggedOverColumn, setDraggedOverColumn] = useState(null);
+  const [dragEnabledTaskId, setDragEnabledTaskId] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState(null);
 
@@ -164,6 +165,7 @@ function App() {
   const handleDragEnd = () => {
     setDraggingTaskId(null);
     setDraggedOverColumn(null);
+    setDragEnabledTaskId(null);
   };
 
   const handleDragOver = (e) => {
@@ -272,6 +274,11 @@ function App() {
         <path d="M8.22 2.97a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 8 8.22 4.28a.75.75 0 0 1 0-1.06Z" />
         <path d="M12.5 8H1.75a.75.75 0 0 1 0-1.5h10.75a.75.75 0 0 1 0 1.5Z" />
       </svg>
+    ),
+    Grabber: () => (
+      <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true">
+        <path d="M10 13a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm0-4a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm0-4a1 1 0 1 1 0-2 1 1 0 0 1 0 2ZM6 13a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm0-4a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm0-4a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z" />
+      </svg>
     )
   };
 
@@ -352,11 +359,16 @@ function App() {
                 // Skeleton Loader
                 Array.from({ length: 3 }).map((_, i) => (
                   <div className="task-item skeleton-card" key={`todo-skeleton-${i}`}>
-                    <div className="task-header-row">
-                      <div className="skeleton-circle" />
-                      <div className="skeleton-text skeleton-meta" />
+                    <div className="task-grab-handle" style={{ opacity: 0.3 }}>
+                      <Octicons.Grabber />
                     </div>
-                    <div className="skeleton-text skeleton-title" />
+                    <div className="task-content">
+                      <div className="task-header-row">
+                        <div className="skeleton-circle" />
+                        <div className="skeleton-text skeleton-meta" />
+                      </div>
+                      <div className="skeleton-text skeleton-title" />
+                    </div>
                   </div>
                 ))
               ) : todoTasks.length === 0 ? (
@@ -373,22 +385,34 @@ function App() {
                     className={`task-item ${draggingTaskId === task.id ? 'task-dragging' : ''}`}
                     key={task.id}
                     id={`task-${task.id}`}
-                    draggable={true}
+                    draggable={dragEnabledTaskId === task.id}
                     onDragStart={(e) => handleDragStart(e, task)}
                     onDragEnd={handleDragEnd}
+                    onMouseLeave={() => setDragEnabledTaskId(null)}
                   >
-                    <div className="task-header-row">
-                      <button
-                        type="button"
-                        className="task-status-btn"
-                        onClick={() => handleToggleTaskStatus(task.id, task.status)}
-                        title="Mark as Done"
-                      >
-                        <Octicons.TodoCardIcon />
-                      </button>
-                      <span className="task-meta-id">kanban_board #{task.id}</span>
+                    <div
+                      className="task-grab-handle"
+                      title="Drag handle"
+                      onMouseDown={() => setDragEnabledTaskId(task.id)}
+                      onMouseUp={() => setDragEnabledTaskId(null)}
+                    >
+                      <Octicons.Grabber />
                     </div>
-                    <div className="task-title">{task.title}</div>
+                    
+                    <div className="task-content">
+                      <div className="task-header-row">
+                        <button
+                          type="button"
+                          className="task-status-btn"
+                          onClick={() => handleToggleTaskStatus(task.id, task.status)}
+                          title="Mark as Done"
+                        >
+                          <Octicons.TodoCardIcon />
+                        </button>
+                        <span className="task-meta-id">kanban_board #{task.id}</span>
+                      </div>
+                      <div className="task-title">{task.title}</div>
+                    </div>
 
                     <div className="task-actions">
                       <button
@@ -439,11 +463,16 @@ function App() {
                 // Skeleton Loader
                 Array.from({ length: 2 }).map((_, i) => (
                   <div className="task-item skeleton-card" key={`done-skeleton-${i}`}>
-                    <div className="task-header-row">
-                      <div className="skeleton-circle" />
-                      <div className="skeleton-text skeleton-meta" />
+                    <div className="task-grab-handle" style={{ opacity: 0.3 }}>
+                      <Octicons.Grabber />
                     </div>
-                    <div className="skeleton-text skeleton-title" />
+                    <div className="task-content">
+                      <div className="task-header-row">
+                        <div className="skeleton-circle" />
+                        <div className="skeleton-text skeleton-meta" />
+                      </div>
+                      <div className="skeleton-text skeleton-title" />
+                    </div>
                   </div>
                 ))
               ) : doneTasks.length === 0 ? (
@@ -460,22 +489,34 @@ function App() {
                     className={`task-item task-done ${draggingTaskId === task.id ? 'task-dragging' : ''}`}
                     key={task.id}
                     id={`task-${task.id}`}
-                    draggable={true}
+                    draggable={dragEnabledTaskId === task.id}
                     onDragStart={(e) => handleDragStart(e, task)}
                     onDragEnd={handleDragEnd}
+                    onMouseLeave={() => setDragEnabledTaskId(null)}
                   >
-                    <div className="task-header-row">
-                      <button
-                        type="button"
-                        className="task-status-btn"
-                        onClick={() => handleToggleTaskStatus(task.id, task.status)}
-                        title="Move back to To Do"
-                      >
-                        <Octicons.DoneCardIcon />
-                      </button>
-                      <span className="task-meta-id">kanban_board #{task.id}</span>
+                    <div
+                      className="task-grab-handle"
+                      title="Drag handle"
+                      onMouseDown={() => setDragEnabledTaskId(task.id)}
+                      onMouseUp={() => setDragEnabledTaskId(null)}
+                    >
+                      <Octicons.Grabber />
                     </div>
-                    <div className="task-title">{task.title}</div>
+
+                    <div className="task-content">
+                      <div className="task-header-row">
+                        <button
+                          type="button"
+                          className="task-status-btn"
+                          onClick={() => handleToggleTaskStatus(task.id, task.status)}
+                          title="Move back to To Do"
+                        >
+                          <Octicons.DoneCardIcon />
+                        </button>
+                        <span className="task-meta-id">kanban_board #{task.id}</span>
+                      </div>
+                      <div className="task-title">{task.title}</div>
+                    </div>
 
                     <div className="task-actions">
                       <button

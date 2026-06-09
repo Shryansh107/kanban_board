@@ -459,9 +459,10 @@ body {
 /* Task Item Row */
 .task-item {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: flex-start;
-  padding: var(--space-3) var(--space-4);
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-2);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
   background: var(--canvas-default);
@@ -469,6 +470,31 @@ body {
   position: relative;
   transition: border-color var(--duration-fast) var(--ease-default),
               box-shadow var(--duration-fast) var(--ease-default);
+}
+
+.task-grab-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fg-muted);
+  cursor: grab;
+  padding: 4px 2px;
+  user-select: none;
+  transition: color var(--duration-fast) var(--ease-default);
+  align-self: center;
+}
+
+.task-grab-handle:hover {
+  color: var(--fg-default);
+}
+
+.task-grab-handle:active {
+  cursor: grabbing;
+}
+
+.task-content {
+  flex: 1;
+  min-width: 0;
 }
 
 .task-item:hover {
@@ -648,12 +674,7 @@ body {
 
 /* Drag and Drop Classes */
 .task-item {
-  cursor: grab;
   user-select: none;
-}
-
-.task-item:active {
-  cursor: grabbing;
 }
 
 .task-item.task-dragging {
