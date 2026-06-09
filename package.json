@@ -2,12 +2,14 @@
   "name": "kanban-task-manager",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "workspaces": [
     "backend",
     "frontend"
   ],
   "scripts": {
     "dev": "concurrently \"npm run dev -w backend\" \"npm run dev -w frontend\"",
+    "build": "npm run build -w frontend",
     "install-all": "npm install"
   },
   "devDependencies": {

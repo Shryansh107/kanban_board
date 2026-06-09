@@ -1,7 +1,7 @@
 /* GitHub Theme Match Design System */
 
 :root,
-[data-color-mode="light"] {
+[data-color-mode="dark"] {
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
   --font-mono: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, "Liberation Mono", monospace;
 
@@ -35,55 +35,6 @@
   --radius-lg: 8px;
   --radius-pill: 999px;
 
-  --bg-default: #ffffff;
-  --bg-subtle: #f6f8fa;
-  --bg-muted: #f6f8fa;
-  --bg-inset: #f6f8fa;
-  --bg-overlay: #ffffff;
-
-  --fg-default: #1f2328;
-  --fg-muted: #656d76;
-  --fg-subtle: #6e7781;
-  --fg-on-emphasis: #ffffff;
-
-  --border-default: #d0d7de;
-  --border-muted: #d8dee4;
-  --border-subtle: rgba(27, 31, 36, 0.15);
-
-  --accent-emphasis: #0969da;
-  --accent-fg: #0969da;
-  --accent-muted: rgba(84, 174, 255, 0.4);
-  --accent-subtle: #ddf4ff;
-
-  --success-emphasis: #2da44e;
-  --success-fg: #1a7f37;
-  --success-subtle: #dafbe1;
-
-  --danger-emphasis: #cf222e;
-  --danger-fg: #cf222e;
-  --danger-subtle: #ffebe9;
-
-  --attention-emphasis: #9a6700;
-  --attention-fg: #9a6700;
-  --attention-subtle: #fff8c5;
-
-  --neutral-muted: rgba(175, 184, 193, 0.2);
-  --neutral-subtle: rgba(234, 238, 242, 0.5);
-
-  --canvas-default: var(--bg-default);
-  --canvas-subtle: var(--bg-subtle);
-  --canvas-inset: #f6f8fa;
-  --canvas-overlay: var(--bg-overlay);
-
-  --shadow-resting: 0 1px 0 rgba(27, 31, 36, 0.04);
-  --shadow-overlay: 0 8px 24px rgba(140, 149, 159, 0.2);
-
-  --ease-default: cubic-bezier(0.2, 0, 0, 1);
-  --duration-fast: 120ms;
-  --duration-normal: 180ms;
-}
-
-[data-color-mode="dark"] {
   --bg-default: #0d1117;
   --bg-subtle: #161b22;
   --bg-muted: #161b22;
@@ -126,6 +77,55 @@
 
   --shadow-resting: 0 1px 0 rgba(0, 0, 0, 0.04);
   --shadow-overlay: 0 8px 24px rgba(1, 4, 9, 0.85);
+
+  --ease-default: cubic-bezier(0.2, 0, 0, 1);
+  --duration-fast: 120ms;
+  --duration-normal: 180ms;
+}
+
+[data-color-mode="light"] {
+  --bg-default: #ffffff;
+  --bg-subtle: #f6f8fa;
+  --bg-muted: #f6f8fa;
+  --bg-inset: #f6f8fa;
+  --bg-overlay: #ffffff;
+
+  --fg-default: #1f2328;
+  --fg-muted: #656d76;
+  --fg-subtle: #6e7781;
+  --fg-on-emphasis: #ffffff;
+
+  --border-default: #d0d7de;
+  --border-muted: #d8dee4;
+  --border-subtle: rgba(27, 31, 36, 0.15);
+
+  --accent-emphasis: #0969da;
+  --accent-fg: #0969da;
+  --accent-muted: rgba(84, 174, 255, 0.4);
+  --accent-subtle: #ddf4ff;
+
+  --success-emphasis: #2da44e;
+  --success-fg: #1a7f37;
+  --success-subtle: #dafbe1;
+
+  --danger-emphasis: #cf222e;
+  --danger-fg: #cf222e;
+  --danger-subtle: #ffebe9;
+
+  --attention-emphasis: #9a6700;
+  --attention-fg: #9a6700;
+  --attention-subtle: #fff8c5;
+
+  --neutral-muted: rgba(175, 184, 193, 0.2);
+  --neutral-subtle: rgba(234, 238, 242, 0.5);
+
+  --canvas-default: var(--bg-default);
+  --canvas-subtle: var(--bg-subtle);
+  --canvas-inset: #f6f8fa;
+  --canvas-overlay: var(--bg-overlay);
+
+  --shadow-resting: 0 1px 0 rgba(27, 31, 36, 0.04);
+  --shadow-overlay: 0 8px 24px rgba(140, 149, 159, 0.2);
 }
 
 /* Global Reset */
@@ -223,7 +223,7 @@ body {
 }
 
 .btn-primary:hover {
-  background: #2c974b; /* Subtle hover color */
+  background: var(--success-emphasis);
   border-color: var(--border-subtle);
   color: var(--fg-on-emphasis);
 }
@@ -398,7 +398,7 @@ body {
   display: flex;
   gap: var(--space-2);
   margin-bottom: var(--space-6);
-  max-width: 600px;
+  max-width: 100%;
 }
 
 .toolbar .input {
@@ -419,7 +419,7 @@ body {
 }
 
 .column-box {
-  background: var(--canvas-default);
+  background: var(--canvas-subtle);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -428,12 +428,17 @@ body {
 }
 
 .column-header {
-  background: var(--bg-subtle);
-  border-bottom: 1px solid var(--border-default);
-  padding: var(--space-3) var(--space-4);
+  background: transparent;
+  padding: var(--space-4) var(--space-4) var(--space-2) var(--space-4);
+  display: flex;
+  flex-direction: column;
+}
+
+.column-header-title-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
 }
 
 .column-title-group {
@@ -448,27 +453,52 @@ body {
   color: var(--fg-default);
 }
 
-.column-icon-todo {
-  fill: var(--fg-muted);
-}
-
-.column-icon-done {
-  fill: var(--success-fg);
-}
-
-.counter-badge {
+.column-counter {
   font-size: var(--text-00);
-  font-weight: var(--weight-semibold);
-  background: var(--neutral-muted);
+  font-weight: var(--weight-medium);
   color: var(--fg-muted);
+  background: var(--neutral-muted);
   padding: 2px 8px;
   border-radius: var(--radius-pill);
+  margin-left: var(--space-1);
+}
+
+.column-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.column-header-btn {
+  border: none;
+  background: transparent;
+  padding: var(--space-1);
+  color: var(--fg-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  transition: color var(--duration-fast) var(--ease-default),
+              background-color var(--duration-fast) var(--ease-default);
+}
+
+.column-header-btn:hover {
+  color: var(--fg-default);
+  background-color: var(--neutral-subtle);
+}
+
+.column-description {
+  font-size: 13px;
+  color: var(--fg-muted);
+  margin-top: var(--space-2);
+  text-align: left;
 }
 
 .column-body {
-  padding: 0;
+  padding: var(--space-3);
   min-height: 250px;
-  background: var(--bg-default);
+  background: transparent;
   display: flex;
   flex-direction: column;
 }
@@ -476,98 +506,67 @@ body {
 /* Task Item Row */
 .task-item {
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
-  justify-content: space-between;
   padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--border-muted);
-  background: var(--bg-default);
-  transition: background-color var(--duration-fast) var(--ease-default);
-}
-
-.task-item:last-child {
-  border-bottom: none;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--canvas-default);
+  margin-bottom: var(--space-3);
+  position: relative;
+  transition: border-color var(--duration-fast) var(--ease-default),
+              box-shadow var(--duration-fast) var(--ease-default);
 }
 
 .task-item:hover {
-  background: var(--bg-subtle);
+  border-color: var(--fg-subtle);
 }
 
-.task-left {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-3);
-  flex: 1;
-  padding-right: var(--space-3);
-}
-
-.task-checkbox-wrapper {
-  margin-top: 3px;
+.task-header-row {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
 }
 
-/* Styled checkbox to fit the developer/GitHub aesthetic */
-.task-checkbox {
-  appearance: none;
-  width: 16px;
-  height: 16px;
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-sm);
-  background-color: var(--bg-default);
+.task-status-btn {
+  border: none;
+  background: transparent;
+  padding: 0;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  position: relative;
+  outline: none;
+  transition: transform var(--duration-fast) var(--ease-default);
 }
 
-.task-checkbox:checked {
-  background-color: var(--accent-emphasis);
-  border-color: var(--accent-emphasis);
+.task-status-btn:hover {
+  transform: scale(1.1);
 }
 
-.task-checkbox:checked::after {
-  content: "";
-  display: block;
-  width: 4px;
-  height: 8px;
-  border: solid var(--fg-on-emphasis);
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
-  position: absolute;
-  top: 1px;
-}
-
-.task-content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
+.task-meta-id {
+  font-size: 13px;
+  color: var(--fg-muted);
 }
 
 .task-title {
   font-size: var(--text-0);
-  font-weight: var(--weight-medium);
   color: var(--fg-default);
+  text-align: left;
   word-break: break-word;
 }
 
 .task-item.task-done .task-title {
-  text-decoration: line-through;
-  color: var(--fg-muted);
-}
-
-.task-meta {
-  font-size: var(--text-00);
-  color: var(--fg-subtle);
-}
-
-.task-actions {
-  display: flex;
-  align-items: center;
+  text-decoration: none;
+  color: var(--fg-default);
 }
 
 .btn-icon-delete {
+  opacity: 0;
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
   background: transparent;
   border: none;
   padding: 4px;
@@ -577,8 +576,13 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: color var(--duration-fast) var(--ease-default),
+  transition: opacity var(--duration-fast) var(--ease-default),
+              color var(--duration-fast) var(--ease-default),
               background-color var(--duration-fast) var(--ease-default);
+}
+
+.task-item:hover .btn-icon-delete {
+  opacity: 1;
 }
 
 .btn-icon-delete:hover {
@@ -673,3 +677,30 @@ body {
   color: var(--fg-muted);
   gap: var(--space-4);
 }
+
+/* Drag and Drop Classes */
+.task-item {
+  cursor: grab;
+  user-select: none;
+}
+
+.task-item:active {
+  cursor: grabbing;
+}
+
+.task-item.task-dragging {
+  opacity: 0.4;
+  border: 1px dashed var(--accent-emphasis);
+  background: var(--accent-subtle);
+}
+
+.column-box {
+  transition: border-color var(--duration-normal) var(--ease-default),
+              box-shadow var(--duration-normal) var(--ease-default);
+}
+
+.column-box.column-drag-over {
+  border-color: var(--accent-emphasis);
+  box-shadow: 0 0 0 3px var(--accent-muted);
+}
+

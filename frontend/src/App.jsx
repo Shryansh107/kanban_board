@@ -8,10 +8,12 @@ function App() {
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [draggingTaskId, setDraggingTaskId] = useState(null);
+  const [draggedOverColumn, setDraggedOverColumn] = useState(null);
   
   // Theme state: defaults to light, saved to localStorage
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('color-mode') || 'light';
+    return localStorage.getItem('color-mode') || 'dark';
   });
 
   // Apply theme on initialization and state change
@@ -134,20 +136,72 @@ function App() {
     }
   };
 
+  // Drag and Drop Handlers
+  const handleDragStart = (e, task) => {
+    e.dataTransfer.setData('text/plain', task.id.toString());
+    e.dataTransfer.effectAllowed = 'move';
+    setDraggingTaskId(task.id);
+  };
+
+  const handleDragEnd = () => {
+    setDraggingTaskId(null);
+    setDraggedOverColumn(null);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleDragEnter = (e, columnStatus) => {
+    e.preventDefault();
+    setDraggedOverColumn(columnStatus);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setDraggedOverColumn(null);
+  };
+
+  const handleDrop = async (e, targetStatus) => {
+    e.preventDefault();
+    setDraggedOverColumn(null);
+    setDraggingTaskId(null);
+    const taskIdStr = e.dataTransfer.getData('text/plain');
+    if (!taskIdStr) return;
+    
+    const taskId = parseInt(taskIdStr, 10);
+    const task = tasks.find(t => t.id === taskId);
+    if (task && task.status !== targetStatus) {
+      await handleToggleTaskStatus(taskId, task.status);
+    }
+  };
+
   // Group tasks
   const todoTasks = tasks.filter(t => t.status === 'todo');
   const doneTasks = tasks.filter(t => t.status === 'done');
 
   // Render SVG icons in-line to avoid loading external icons
   const Octicons = {
-    Tasklist: () => (
-      <svg className="column-icon-todo" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
-        <path d="M2.5 1.75a.25.25 0 0 1 .25-.25h10.5a.25.25 0 0 1 .25.25v12.5a.25.25 0 0 1-.25.25H2.75a.25.25 0 0 1-.25-.25V1.75ZM4 4.75v.5h.5v-.5H4ZM4 8v.5h.5V8H4Zm0 3.25v.5h.5v-.5H4ZM6 5h6v1H6V5Zm0 3.25h6v1H6v-1Zm0 3.25h6v1H6v-1Z" />
+    TodoHeaderIcon: () => (
+      <svg className="column-icon-todo" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="none" stroke="#2da44e" strokeWidth="2">
+        <circle cx="8" cy="8" r="6" />
       </svg>
     ),
-    CheckCircle: () => (
-      <svg className="column-icon-done" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
-        <path d="M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16Zm3.78-9.72a.75.75 0 0 0-1.06-1.06L6.75 9.19 5.28 7.72a.75.75 0 0 0-1.06 1.06l2 2a.75.75 0 0 0 1.06 0l4.5-4.5Z" />
+    DoneHeaderIcon: () => (
+      <svg className="column-icon-done" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="none" stroke="#a371f7" strokeWidth="2">
+        <circle cx="8" cy="8" r="6" />
+      </svg>
+    ),
+    TodoCardIcon: () => (
+      <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="none" stroke="#2da44e" strokeWidth="2">
+        <circle cx="8" cy="8" r="6" />
+        <circle cx="8" cy="8" r="2" fill="#2da44e" />
+      </svg>
+    ),
+    DoneCardIcon: () => (
+      <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="none" stroke="#a371f7" strokeWidth="2">
+        <circle cx="8" cy="8" r="6" />
+        <path d="M5.5 8l1.5 1.5 3.5-3.5" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     ),
     Trash: () => (
@@ -179,6 +233,16 @@ function App() {
       <svg viewBox="0 0 24 24" width="32" height="32" aria-hidden="true">
         <path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2Zm0 16H5V5h14v14ZM17 12H7v-2h10v2Zm-4 4H7v-2h6v2Zm4-8H7V6h10v2Z" />
       </svg>
+    ),
+    Kebab: () => (
+      <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+        <path d="M8 9a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3ZM1.5 9a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Zm13 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Z" />
+      </svg>
+    ),
+    Plus: () => (
+      <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+        <path d="M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z" />
+      </svg>
     )
   };
 
@@ -205,16 +269,7 @@ function App() {
 
       {/* Main Content Area */}
       <main className="main-content" id="main-content">
-        {/* Repo Header style block */}
-        <section className="repo-header">
-          <div className="repo-title-row">
-            <span className="repo-name">kanban-task-manager</span>
-            <span className="repo-badge">Public</span>
-          </div>
-          <div className="repo-meta">
-            An in-memory Kanban task board built with Node.js + Express and React, following GitHub styling rules.
-          </div>
-        </section>
+
 
         {/* Global Error Banner */}
         {error && (
@@ -257,13 +312,22 @@ function App() {
         {/* Kanban Board columns side-by-side */}
         <div className="kanban-board" id="kanban-board">
           {/* TO DO COLUMN */}
-          <div className="column-box" id="todo-column">
+          <div 
+            className={`column-box ${draggedOverColumn === 'todo' ? 'column-drag-over' : ''}`} 
+            id="todo-column"
+            onDragOver={handleDragOver}
+            onDragEnter={(e) => handleDragEnter(e, 'todo')}
+            onDragLeave={handleDragLeave}
+            onDrop={(e) => handleDrop(e, 'todo')}
+          >
             <div className="column-header">
-              <div className="column-title-group">
-                <Octicons.Tasklist />
-                <span className="column-title">To Do</span>
-                <span className="counter-badge" id="todo-counter">{todoTasks.length}</span>
+              <div className="column-header-title-row">
+                <div className="column-title-group">
+                  <Octicons.TodoHeaderIcon />
+                  <span className="column-title">Todo</span>
+                </div>
               </div>
+              <div className="column-description">This item hasn't been started</div>
             </div>
             <div className="column-body">
               {isLoading && tasks.length === 0 ? (
@@ -290,34 +354,36 @@ function App() {
               ) : (
                 // Tasks List
                 todoTasks.map(task => (
-                  <div className="task-item" key={task.id} id={`task-${task.id}`}>
-                    <div className="task-left">
-                      <div className="task-checkbox-wrapper">
-                        <input
-                          type="checkbox"
-                          className="task-checkbox"
-                          checked={false}
-                          onChange={() => handleToggleTaskStatus(task.id, task.status)}
-                          title="Mark as Done"
-                          aria-label={`Mark task "${task.title}" as done`}
-                        />
-                      </div>
-                      <div className="task-content">
-                        <span className="task-title">{task.title}</span>
-                        <span className="task-meta mono">#{task.id} • Status: todo</span>
-                      </div>
-                    </div>
-                    <div className="task-actions">
-                      <button
+                  <div 
+                    className={`task-item ${draggingTaskId === task.id ? 'task-dragging' : ''}`} 
+                    key={task.id} 
+                    id={`task-${task.id}`}
+                    draggable={true}
+                    onDragStart={(e) => handleDragStart(e, task)}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <div className="task-header-row">
+                      <button 
                         type="button"
-                        className="btn-icon-delete"
-                        onClick={() => handleDeleteTask(task.id)}
-                        title="Delete task"
-                        aria-label={`Delete task "${task.title}"`}
+                        className="task-status-btn"
+                        onClick={() => handleToggleTaskStatus(task.id, task.status)}
+                        title="Mark as Done"
                       >
-                        <Octicons.Trash />
+                        <Octicons.TodoCardIcon />
                       </button>
+                      <span className="task-meta-id">kanban_board #{task.id}</span>
                     </div>
+                    <div className="task-title">{task.title}</div>
+                    
+                    <button
+                      type="button"
+                      className="btn-icon-delete"
+                      onClick={() => handleDeleteTask(task.id)}
+                      title="Delete task"
+                      aria-label={`Delete task "${task.title}"`}
+                    >
+                      <Octicons.Trash />
+                    </button>
                   </div>
                 ))
               )}
@@ -325,13 +391,22 @@ function App() {
           </div>
 
           {/* DONE COLUMN */}
-          <div className="column-box" id="done-column">
+          <div 
+            className={`column-box ${draggedOverColumn === 'done' ? 'column-drag-over' : ''}`} 
+            id="done-column"
+            onDragOver={handleDragOver}
+            onDragEnter={(e) => handleDragEnter(e, 'done')}
+            onDragLeave={handleDragLeave}
+            onDrop={(e) => handleDrop(e, 'done')}
+          >
             <div className="column-header">
-              <div className="column-title-group">
-                <Octicons.CheckCircle />
-                <span className="column-title">Done</span>
-                <span className="counter-badge" id="done-counter">{doneTasks.length}</span>
+              <div className="column-header-title-row">
+                <div className="column-title-group">
+                  <Octicons.DoneHeaderIcon />
+                  <span className="column-title">Done</span>
+                </div>
               </div>
+              <div className="column-description">This has been completed</div>
             </div>
             <div className="column-body">
               {isLoading && tasks.length === 0 ? (
@@ -358,34 +433,36 @@ function App() {
               ) : (
                 // Tasks List
                 doneTasks.map(task => (
-                  <div className="task-item task-done" key={task.id} id={`task-${task.id}`}>
-                    <div className="task-left">
-                      <div className="task-checkbox-wrapper">
-                        <input
-                          type="checkbox"
-                          className="task-checkbox"
-                          checked={true}
-                          onChange={() => handleToggleTaskStatus(task.id, task.status)}
-                          title="Move back to To Do"
-                          aria-label={`Move task "${task.title}" back to to-do`}
-                        />
-                      </div>
-                      <div className="task-content">
-                        <span className="task-title">{task.title}</span>
-                        <span className="task-meta mono">#{task.id} • Status: done</span>
-                      </div>
-                    </div>
-                    <div className="task-actions">
-                      <button
+                  <div 
+                    className={`task-item task-done ${draggingTaskId === task.id ? 'task-dragging' : ''}`} 
+                    key={task.id} 
+                    id={`task-${task.id}`}
+                    draggable={true}
+                    onDragStart={(e) => handleDragStart(e, task)}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <div className="task-header-row">
+                      <button 
                         type="button"
-                        className="btn-icon-delete"
-                        onClick={() => handleDeleteTask(task.id)}
-                        title="Delete task"
-                        aria-label={`Delete task "${task.title}"`}
+                        className="task-status-btn"
+                        onClick={() => handleToggleTaskStatus(task.id, task.status)}
+                        title="Move back to To Do"
                       >
-                        <Octicons.Trash />
+                        <Octicons.DoneCardIcon />
                       </button>
+                      <span className="task-meta-id">kanban_board #{task.id}</span>
                     </div>
+                    <div className="task-title">{task.title}</div>
+                    
+                    <button
+                      type="button"
+                      className="btn-icon-delete"
+                      onClick={() => handleDeleteTask(task.id)}
+                      title="Delete task"
+                      aria-label={`Delete task "${task.title}"`}
+                    >
+                      <Octicons.Trash />
+                    </button>
                   </div>
                 ))
               )}
