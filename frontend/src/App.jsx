@@ -24,7 +24,7 @@ function App() {
   const [dragEnabledTaskId, setDragEnabledTaskId] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState(null);
-  
+
   // Typewriter Fullscreen Loader States
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [visibleLines, setVisibleLines] = useState([]);
@@ -451,7 +451,7 @@ function App() {
                     >
                       <Octicons.Grabber />
                     </div>
-                    
+
                     <div className="task-content">
                       <div className="task-header-row">
                         <button
@@ -635,7 +635,7 @@ function App() {
           <div className="loader"></div>
           <div className="loader-messages-container">
             <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', color: 'var(--fg-default)', fontSize: '11px', letterSpacing: '0.05em', marginBottom: '16px' }}>
-              SYSTEM INITIALIZATION — Because Render is slow
+              This loader is here — Because Render is slow
             </div>
             {visibleLines.map((line, idx) => (
               <div key={idx} className="mono" style={{ color: 'var(--fg-muted)', marginBottom: '4px', textTransform: 'uppercase' }}>// {line}</div>
